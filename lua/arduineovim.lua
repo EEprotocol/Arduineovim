@@ -148,7 +148,11 @@ function M.setup()
 		end
 	end,{})
 	vim.api.nvim_create_user_command("ArduinoProp",function()
-		print("Port:"..port..", FQBN:"..fqbn..", Protocol:"..protocol..", Type:"..tipe)
+		if port~=nil then
+			print("Port:"..port..", FQBN:"..fqbn..", Protocol:"..protocol..", Type:"..tipe)
+		else
+			print("Having set NOTHING!")
+		end
 	end,
 	{})
 end
