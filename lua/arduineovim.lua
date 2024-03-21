@@ -176,7 +176,7 @@ function M.setup()
 		local s = vim.fn.input(">>>")
 		s=s+0
 		local fqbnlist=spaceSplit(result[s+1])
-		print("FQBN is "..fqbnlist[#fqbnlist-1])
+		print("\nFQBN is "..fqbnlist[#fqbnlist-1])
 		fqbn=fqbnlist[#fqbnlist-1]
 		--[[fqbn=spaceSplit(result[s+1])[-2]
 		print('FQBN:'..fqbn..' specified')]]
