@@ -91,7 +91,7 @@ end
 
 -- return string and make the parameters
 local fqbn, tipe, protocol, port, serial
-
+local prop
 local function parametasign(str1, str2)
 	local indices=findMatchingWord(str1,str2)
 	local index=1
@@ -104,10 +104,12 @@ local function parametasign(str1, str2)
 		end
 		index=index+1
 	end
-	port=paras[1]:gsub("%s+$", "")
-	protocol=paras[2]:gsub("%s+$", "")
-	tipe=paras[3]:gsub("%s+$", "")
+	prop={
+	port=paras[1]:gsub("%s+$", ""),
+	protocol=paras[2]:gsub("%s+$", ""),
+	tipe=paras[3]:gsub("%s+$", ""),
 	fqbn=paras[4]:gsub("%s+$", "")
+}
 
 	return paras
 end
@@ -135,6 +137,10 @@ function M.setup()
 			else
 				vim.api.nvim_command("redraw")
 				local paras = parametasign(result[1],result[s+1])
+				port=prop[port]
+				fqbn=prop[fqbn]
+				tipe=prop[tipe]
+				protocol=prop[protocol]
 				print("Port:"..port..", FQBN:"..fqbn..", Protocol:"..protocol..", Type:"..tipe)
 				local varset=spaceSplit(result[s+1])
 				local path=getFolderPath(vim.api.nvim_buf_get_name(0))
@@ -147,6 +153,7 @@ function M.setup()
 			end
 		end
 	end,{})
+
 	vim.api.nvim_create_user_command("ArduinoProp",function()
 		if port~=nil then
 			print("Port:"..port..", FQBN:"..fqbn..", Protocol:"..protocol..", Type:"..tipe)
@@ -155,6 +162,25 @@ function M.setup()
 		end
 	end,
 	{})
+
+	vim.api.nvim_create_user_command("ArduinoCompile",function (fqbn,port)
+		local comp=vim.fn.system*('arduino-cli compile -b '..fqbn..' -p '..port..vim.api.nvim_buf_get_name(0))
+	end,{})
+
+	vim.api.nvim_create_user_command("ArduinoSearchFQBN",function (opt)
+		if opt.args==nil then
+			print('Must input a key word')
+		end
+		local over=vim.fn.system('arduino-cli board search '.. opt.args)
+		local result,i= splitString(over)
+		local s = vim.fn.input(">>>")
+		s=s+0
+		local fqbnlist=spaceSplit(result[s+1])
+		print("FQBN is "..fqbnlist[#fqbnlist-1])
+		fqbn=fqbnlist[#fqbnlist-1]
+		--[[fqbn=spaceSplit(result[s+1])[-2]
+		print('FQBN:'..fqbn..' specified')]]
+	end,{nargs=1})
 end
 
 
